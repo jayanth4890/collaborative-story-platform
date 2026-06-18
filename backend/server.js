@@ -26,11 +26,18 @@ const corsOptions = {
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps, curl, postman, etc.)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
+    
+    const isOriginAllowed = allowedOrigins.indexOf(origin) !== -1 || 
+                            allowedOrigins.includes('*') || 
+                            origin.endsWith('.vercel.app') || 
+                            /^https?:\/\/[a-zA-Z0-9-_]+\.vercel\.app$/.test(origin);
+
+    if (isOriginAllowed) {
       callback(null, true);
     } else {
       console.warn(`Origin Blocked by CORS: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
+      // Pass false to callback to block request via standard CORS header omission instead of throwing Error
+      callback(null, false);
     }
   },
   credentials: true,
