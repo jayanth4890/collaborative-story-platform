@@ -45,6 +45,10 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       return userData;
     } catch (error) {
+      console.error('Login error details:', error);
+      if (!error.response) {
+        throw `Network Error: Cannot connect to API server at "${api.defaults.baseURL}". Please verify your Vercel VITE_API_URL setting.`;
+      }
       throw error.response?.data?.message || 'Login failed';
     } finally {
       setLoading(false);
@@ -61,6 +65,10 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       return userData;
     } catch (error) {
+      console.error('Registration error details:', error);
+      if (!error.response) {
+        throw `Network Error: Cannot connect to API server at "${api.defaults.baseURL}". Please verify your Vercel VITE_API_URL setting.`;
+      }
       throw error.response?.data?.message || 'Registration failed';
     } finally {
       setLoading(false);
