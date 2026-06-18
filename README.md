@@ -163,9 +163,9 @@ All routes require a valid JWT token passed in the header as:
    ```bash
    cd backend
    ```
-2. The `.env` file has already been generated with defaults:
+2. The `.env` file has already been configured with MongoDB Atlas:
    * `PORT=5001`
-   * `MONGO_URI=mongodb://127.0.0.1:27017/collaborative_story`
+   * `MONGO_URI=mongodb+srv://kommalapatijayanth:Jayanth%407@cluster0.mbvcqb9.mongodb.net/scribblecollab?retryWrites=true&w=majority&appName=Cluster0`
    * `JWT_SECRET=supersecretkey123456`
    * `FRONTEND_URL=http://localhost:5173`
    * `EMAIL_USER=your_email@gmail.com`

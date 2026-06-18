@@ -13,13 +13,33 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+// Trust proxy (required for correct client IP detection behind reverse proxies like Render/Vercel)
+app.set('trust proxy', 1);
+
+// Configure CORS allowed origins
+const allowedOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
+  : ['http://localhost:5173'];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, postman, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
+      callback(null, true);
+    } else {
+      console.warn(`Origin Blocked by CORS: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
+};
+
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
-    credentials: true,
-  }
+  cors: corsOptions
 });
 
 // Attach Socket.io instance to req
@@ -62,10 +82,7 @@ io.on('connection', (socket) => {
 });
 
 // Middlewares
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true,
-}));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
